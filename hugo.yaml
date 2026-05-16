@@ -1,0 +1,71 @@
+# Site config
+# Full reference: https://hugoblox.com/docs/hugo-tutorial/
+
+title: Vahan Arsenyan
+baseURL: "https://vahanarsenian.github.io/"
+
+# The site's title appears in the browser tab and page header.
+defaultContentLanguage: en
+defaultContentLanguageInSubdir: false
+hasCJKLanguage: false
+
+# Enable Emoji in Markdown.
+enableEmoji: true
+
+# Enable GitInfo so pages can show a "last modified" date.
+enableGitInfo: false
+
+# SEO / sitemap
+enableRobotsTXT: true
+
+# Permalinks
+permalinks:
+  tags: "/tag/:slug/"
+  categories: "/category/:slug/"
+  publication_types: "/publication-type/:slug/"
+
+# Taxonomies
+taxonomies:
+  tag: tags
+  category: categories
+  publication_type: publication_types
+
+# Content dir is the default `content`
+summaryLength: 30
+
+# Outputs
+outputs:
+  home: [HTML, RSS, JSON, WebAppManifest]
+  section: [HTML, RSS]
+
+# Image processing
+imaging:
+  resampleFilter: lanczos
+  quality: 90
+  anchor: smart
+
+# Timeout in milliseconds for generating a page (needed for large photo galleries).
+timeout: 600000
+
+# Required by Tailwind CSS v4: writes hugo_stats.json so Tailwind can detect
+# the utility classes used in templates and generate the corresponding CSS.
+build:
+  writeStats: true
+
+# Markdown
+markup:
+  defaultMarkdownHandler: goldmark
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    codeFences: true
+    noClasses: false
+  tableOfContents:
+    startLevel: 2
+    endLevel: 3
+
+# Modules: pull the Hugo Blox Academic CV theme + helper bundle.
+module:
+  imports:
+    - path: github.com/HugoBlox/kit/templates/academic-cv

@@ -1,0 +1,10 @@
+{{ define "main" }}
+{{ partial "hobby-styles.html" . }}
+{{ $anime := .Site.GetPage "/hobbies/anime" }}
+{{ partial "hobby-detail.html" (dict
+  "page"          .
+  "medium"        "anime"
+  "backPermalink" $anime.RelPermalink
+  "backLabel"     "Anime"
+) }}
+{{ end }}

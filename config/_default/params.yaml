@@ -1,0 +1,118 @@
+# Site params
+# ---------------------------------------------------------------------
+# Global
+# ---------------------------------------------------------------------
+
+# Hugo Blox v2 identity (navbar brand, footer, og:site_name, JSON-LD publisher, etc.)
+hugoblox:
+  identity:
+    name: "Vahan Arsenyan"
+    organization: "Vahan Arsenyan"
+    type: person
+    tagline: "PhD Candidate · CREST, ENSAE, IP Paris"
+    description: >-
+      Vahan Arsenyan - PhD candidate at CREST, ENSAE, Institut Polytechnique
+      de Paris, under the supervision of Prof. Arnak Dalalyan. Interested in
+      generation, sampling, and online learning.
+
+  # Footer copyright notice. The site_footer_license partial reads this
+  # key (`site.Params.hugoblox.copyright.notice`); the `footer.copyright`
+  # block lower in this file is *not* consulted by the theme. Placeholders
+  # `{year}` and `{name}` are substituted at render time from `identity`.
+  copyright:
+    notice: "© {year} {name}. All rights reserved."
+
+appearance:
+  theme_day: default
+  theme_night: default
+  font: humanist
+  font_size: L
+
+marketing:
+  seo:
+    site_type: Person
+    local_business_type: ""
+    org_name: ""
+    description: >-
+      Vahan Arsenyan - PhD candidate at CREST, ENSAE, Institut Polytechnique
+      de Paris, under the supervision of Prof. Arnak Dalalyan. Interested in
+      generation, sampling, and online learning.
+    twitter: ""
+  analytics:
+    google_analytics: ""
+    baidu_tongji: ""
+    google_tag_manager: ""
+    microsoft_clarity: ""
+  verification:
+    google: ""
+    baidu: ""
+
+# ---------------------------------------------------------------------
+# Site header
+# ---------------------------------------------------------------------
+header:
+  navbar:
+    enable: true
+    align: l
+    show_logo: true
+    show_language: false
+    show_day_night: true
+    show_search: true
+    show_translations: false
+    highlight_active_link: true
+
+# ---------------------------------------------------------------------
+# Localization
+# ---------------------------------------------------------------------
+locale:
+  date_format: "Jan 2, 2006"
+  time_format: "15:04"
+  address_format: en-us
+
+# ---------------------------------------------------------------------
+# Site features
+# ---------------------------------------------------------------------
+features:
+  syntax_highlighter:
+    theme_light: github-light
+    theme_dark: dracula
+  math:
+    enable: true
+  privacy_pack: false
+  repository:
+    url: "https://github.com/vahanarsenyan/persona_webpage"
+    content_dir: content
+    branch: main
+  avatar:
+    gravatar: false
+    shape: circle
+  comment:
+    provider: ""
+  search:
+    provider: wowchemy
+    algolia:
+      app_id: ""
+      api_key: ""
+      index_name: ""
+      show_logo: false
+  map:
+    provider: ""
+    api_key: ""
+    zoom: 15
+
+# ---------------------------------------------------------------------
+# Extensions
+# ---------------------------------------------------------------------
+extensions:
+  cms:
+    branch: main
+    local_backend: false
+  academicons:
+    enable: true
+
+# ---------------------------------------------------------------------
+# Security
+# ---------------------------------------------------------------------
+security:
+  # Allow frame for embedding speaker notes in slides
+  allow_frame: true

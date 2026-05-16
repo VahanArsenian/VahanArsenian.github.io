@@ -1,0 +1,53 @@
+{{/* Local Hugo Blox: Markdown (themed override).
+     Renders a unified section heading (icon-circle + bold title) matching the
+     About / Interests / Education blocks, followed by the markdown body. */}}
+
+{{ $page := .wcPage }}
+{{ $block := .wcBlock }}
+{{ $content := $block.content }}
+{{ if not (reflect.IsMap $content) }}{{ $content = dict }}{{ end }}
+{{ $design := $block.design }}
+{{ if not (reflect.IsMap $design) }}{{ $design = dict }}{{ end }}
+
+{{ $title := "" }}
+{{ with index $content "title" }}{{ $title = printf "%v" . | emojify | $page.RenderString }}{{ end }}
+
+{{ $subtitle := "" }}
+{{ with index $content "subtitle" }}{{ $subtitle = printf "%v" . | emojify | $page.RenderString }}{{ end }}
+
+{{ $text := "" }}
+{{ with index $content "text" }}{{ $text = printf "%v" . | emojify | $page.RenderString | safeHTML }}{{ end }}
+
+{{ $icon := "" }}
+{{ with index $content "icon" }}
+  {{ if eq (printf "%T" .) "string" }}
+    {{ $icon = strings.TrimSpace . }}
+  {{ end }}
+{{ end }}
+
+<div class="py-8 md:py-12 px-4">
+  <div class="max-w-6xl mx-auto">
+    {{ if $title }}
+    <div class="flex items-center gap-4 mb-6">
+      {{ if $icon }}
+        <div class="flex-shrink-0 w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center">
+          {{ partial "functions/get_icon" (dict "name" $icon "attributes" "class='w-6 h-6 text-primary-600 dark:text-primary-400'") }}
+        </div>
+      {{ end }}
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+        {{ $title }}
+      </h2>
+    </div>
+    {{ end }}
+
+    {{ with $subtitle }}
+      <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">{{ . }}</p>
+    {{ end }}
+
+    {{ with $text }}
+      <div class="prose prose-slate lg:prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200">
+        {{ . }}
+      </div>
+    {{ end }}
+  </div>
+</div>

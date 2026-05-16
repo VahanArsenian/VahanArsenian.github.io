@@ -1,0 +1,82 @@
+{{/*
+  hobby-detail.html
+  Shared detail layout for a single game or anime.
+
+  Expected dict keys:
+    page          - the current Page
+    medium        - "games" or "anime"
+    backPermalink - URL to the parent list (hobbies/games or hobbies/anime)
+    backLabel     - link label for the parent list (e.g. "Games")
+*/}}
+{{ $p := .page }}
+{{ $medium := .medium }}
+{{ $rating := $p.Params.rating | default 0 }}
+{{ $status := $p.Params.status | default "" }}
+{{ $genres := $p.Params.genre | default slice }}
+
+{{ $cover := $p.Params.cover }}
+{{ $img := "" }}
+{{ with $cover }}
+  {{ $img = (resources.Get (printf "media/%s" .)) }}
+  {{ if not $img }}
+    {{ $img = ($p.Resources.GetMatch (printf "%s*" (path.Base .))) }}
+  {{ end }}
+{{ end }}
+
+<div class="universal-wrapper pt-5 pb-5">
+  <nav class="hobby-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ ($p.Site.GetPage "/hobbies").RelPermalink }}">Hobbies</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ .backPermalink }}">{{ .backLabel }}</a>
+    <span aria-hidden="true">/</span>
+    <span>{{ $p.Title }}</span>
+  </nav>
+
+  <article class="hobby-detail">
+    <aside class="hobby-detail__sidebar">
+      <div class="hobby-detail__cover">
+        {{ if $img }}
+          <img src="{{ $img.RelPermalink }}" alt="{{ $p.Title }} cover">
+        {{ else }}
+          <div class="hobby-card__cover-placeholder" aria-hidden="true">
+            <span>{{ substr $p.Title 0 1 }}</span>
+          </div>
+        {{ end }}
+      </div>
+      <dl class="hobby-detail__meta">
+        {{ if gt $rating 0.0 }}
+          <div><dt>Rating</dt><dd><span class="hobby-card__rating hobby-card__rating--inline">{{ $rating }}</span></dd></div>
+        {{ end }}
+        {{ if $status }}
+          <div><dt>Status</dt><dd><span class="hobby-card__status hobby-card__status--{{ $status }}">{{ $status | humanize | title }}</span></dd></div>
+        {{ end }}
+        {{ if eq $medium "games" }}
+          {{ with $p.Params.platform }}<div><dt>Platform</dt><dd>{{ delimit . ", " }}</dd></div>{{ end }}
+        {{ else }}
+          {{ with $p.Params.studio }}<div><dt>Studio</dt><dd>{{ . }}</dd></div>{{ end }}
+        {{ end }}
+        {{ with $p.Params.year_completed }}{{ if ne . 0 }}<div><dt>Year</dt><dd>{{ . }}</dd></div>{{ end }}{{ end }}
+        {{ if $genres }}
+          <div>
+            <dt>Genres</dt>
+            <dd>
+              <ul class="hobby-card__tags hobby-card__tags--detail">
+                {{ range $genres }}<li>{{ . }}</li>{{ end }}
+              </ul>
+            </dd>
+          </div>
+        {{ end }}
+      </dl>
+    </aside>
+
+    <div class="hobby-detail__body">
+      <h1 class="hobby-detail__title">{{ $p.Title }}</h1>
+      {{ with $p.Params.summary }}
+        <p class="hobby-detail__lede">{{ . }}</p>
+      {{ end }}
+      <div class="hobby-detail__notes">
+        {{ $p.Content }}
+      </div>
+    </div>
+  </article>
+</div>

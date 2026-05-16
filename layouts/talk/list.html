@@ -1,0 +1,255 @@
+{{ define "main" }}
+<style>
+  /* ------------------------------------------------------------------------
+     Events list — academic timeline.
+     Reuses the hobby design tokens (--hobby-*) which are injected globally
+     via the head-end hook.
+  ------------------------------------------------------------------------ */
+  .events-page { max-width: 60rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+  .events-section { margin-top: 2.25rem; }
+  .events-section:first-of-type { margin-top: 1.5rem; }
+
+  .events-section-title {
+    font-family: var(--hobby-serif);
+    font-size: 1.35rem;
+    color: var(--hobby-ink);
+    letter-spacing: -0.005em;
+    margin: 0 0 0.9rem 0;
+  }
+
+  .events-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .event-card {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    padding: 1rem 1.25rem;
+    background: var(--hobby-surface);
+    border: 1px solid var(--hobby-border);
+    border-radius: var(--hobby-radius);
+    box-shadow: var(--hobby-shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hobby-shadow-hover);
+    border-color: var(--hobby-border-strong);
+  }
+
+  .event-date {
+    font-variant-numeric: tabular-nums;
+    color: var(--hobby-ink-muted);
+    font-size: 0.85rem;
+    line-height: 1.3;
+    text-align: center;
+    border-right: 1px solid var(--hobby-border);
+    padding-right: 1rem;
+  }
+  .event-date .event-date-day {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--hobby-ink);
+    line-height: 1;
+    margin-top: 0.1rem;
+  }
+  .event-date .event-date-year {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--hobby-ink-soft);
+    letter-spacing: 0.04em;
+  }
+
+  .event-body { min-width: 0; }
+  .event-title {
+    margin: 0 0 0.2rem 0;
+    font-family: var(--hobby-serif);
+    font-size: 1.2rem;
+    line-height: 1.3;
+    color: var(--hobby-ink);
+    letter-spacing: -0.005em;
+  }
+  .event-card:hover .event-title { color: var(--hobby-accent); }
+
+  .event-venue {
+    color: var(--hobby-ink-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .event-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--hobby-ink-soft);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .event-location-icon {
+    flex-shrink: 0;
+    color: var(--hobby-accent);
+    opacity: 0.75;
+    transform: translateY(-0.5px);
+  }
+  .event-card:hover .event-location-icon { opacity: 1; }
+
+  .event-summary {
+    color: var(--hobby-ink-muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .event-papers {
+    margin-top: 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+  .event-papers-label {
+    color: var(--hobby-ink-soft);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-right: 0.35rem;
+  }
+  .event-papers-list {
+    list-style: none;
+    margin: 0.15rem 0 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.15rem;
+  }
+  .event-paper-title {
+    color: var(--hobby-ink);
+    font-style: italic;
+  }
+
+  .event-upcoming-flag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--hobby-accent);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+
+  .events-empty {
+    color: var(--hobby-ink-soft);
+    font-style: italic;
+    padding: 0.5rem 0;
+  }
+
+  @media (max-width: 540px) {
+    .event-card {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+    }
+    .event-date {
+      border-right: none;
+      border-bottom: 1px solid var(--hobby-border);
+      padding-right: 0;
+      padding-bottom: 0.45rem;
+      text-align: left;
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+    .event-date .event-date-day { font-size: 1.1rem; margin-top: 0; }
+    .event-date .event-date-year { margin-top: 0; }
+  }
+</style>
+
+<div class="events-page">
+  <header class="hobby-header">
+    <h1 class="hobby-page-title">{{ .Title }}</h1>
+    {{ with .Params.summary }}
+      <p class="hobby-page-lede">{{ . | markdownify }}</p>
+    {{ end }}
+    {{ with .Content }}
+      <div class="hobby-page-intro">{{ . }}</div>
+    {{ end }}
+  </header>
+
+  {{/* Pull all child pages and split into upcoming vs past based on date_end (or date). */}}
+  {{ $now := now }}
+  {{ $all := .Pages }}
+  {{ $upcoming := slice }}
+  {{ $past := slice }}
+  {{ range $all }}
+    {{ $end := .Date }}
+    {{ with .Params.date_end }}
+      {{ $end = (time .) }}
+    {{ end }}
+    {{ if $end.After $now }}
+      {{ $upcoming = $upcoming | append . }}
+    {{ else }}
+      {{ $past = $past | append . }}
+    {{ end }}
+  {{ end }}
+
+  {{ $upcoming = sort $upcoming "Date" "asc" }}
+  {{ $past = sort $past "Date" "desc" }}
+
+  {{ if $upcoming }}
+    <section class="events-section">
+      <h2 class="events-section-title">Upcoming</h2>
+      <ul class="events-list">
+        {{ range $upcoming }}
+          {{ partial "event-card.html" (dict "page" . "upcoming" true) }}
+        {{ end }}
+      </ul>
+    </section>
+  {{ end }}
+
+  {{/* Group past events by year */}}
+  {{ if $past }}
+    {{ $byYear := dict }}
+    {{ $years := slice }}
+    {{ range $past }}
+      {{ $y := .Date.Format "2006" }}
+      {{ if not (isset $byYear $y) }}
+        {{ $byYear = merge $byYear (dict $y (slice .)) }}
+        {{ $years = $years | append $y }}
+      {{ else }}
+        {{ $existing := index $byYear $y }}
+        {{ $byYear = merge $byYear (dict $y ($existing | append .)) }}
+      {{ end }}
+    {{ end }}
+    {{ $years = sort ($years | uniq) "value" "desc" }}
+
+    {{ range $year := $years }}
+      {{ $events := index $byYear $year }}
+      <section class="events-section">
+        <h2 class="events-section-title">{{ $year }}</h2>
+        <ul class="events-list">
+          {{ range $events }}
+            {{ partial "event-card.html" (dict "page" . "upcoming" false) }}
+          {{ end }}
+        </ul>
+      </section>
+    {{ end }}
+  {{ end }}
+
+  {{ if and (not $upcoming) (not $past) }}
+    <p class="events-empty">No events yet.</p>
+  {{ end }}
+</div>
+{{ end }}

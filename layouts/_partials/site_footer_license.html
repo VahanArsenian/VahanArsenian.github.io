@@ -1,0 +1,15 @@
+{{/* Display only the copyright notice. License icons and link are suppressed. */}}
+
+{{ $branding := partialCached "functions/get_branding" . "branding" }}
+{{ $page_copyright := .Params.copyright | default dict }}
+{{ $site_copyright := site.Params.hugoblox.copyright | default dict }}
+{{ $notice := $page_copyright.notice | default $site_copyright.notice }}
+
+{{ with $notice }}
+<p class="powered-by text-center">
+  {{ $processed := replace . "{year}" now.Year }}
+  {{ $processed = replace $processed "{name}" $branding.organization }}
+  {{ $processed = replace $processed "{license}" "" }}
+  {{ $processed | markdownify }}
+</p>
+{{ end }}

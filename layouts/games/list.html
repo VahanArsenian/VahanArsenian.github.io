@@ -1,0 +1,27 @@
+{{ define "main" }}
+{{ partial "hobby-styles.html" . }}
+<div class="universal-wrapper pt-5 pb-5">
+  <nav class="hobby-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ (.Site.GetPage "/hobbies").RelPermalink }}">Hobbies</a>
+    <span aria-hidden="true">/</span>
+    <span>Games</span>
+  </nav>
+
+  <header class="hobby-header">
+    <h1 class="hobby-page-title">{{ .Title }}</h1>
+    {{ with .Params.summary }}
+      <p class="hobby-page-lede">{{ . | markdownify }}</p>
+    {{ end }}
+    {{ with .Content }}
+      <div class="hobby-page-intro">{{ . }}</div>
+    {{ end }}
+  </header>
+
+  {{ $pages := sort (where .Site.RegularPages "Type" "games") "Params.year_completed" "desc" }}
+  {{ partial "hobby-card-grid.html" (dict
+    "pages"     $pages
+    "medium"    "games"
+    "statusAll" (slice "played" "playing" "backlog" "dropped")
+  ) }}
+</div>
+{{ end }}

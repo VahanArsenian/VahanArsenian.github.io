@@ -1,0 +1,43 @@
+{{ define "main" }}
+{{ partial "hobby-styles.html" . }}
+<div class="universal-wrapper pt-5 pb-5">
+  <header class="hobby-header">
+    <h1 class="hobby-page-title">{{ .Title }}</h1>
+    {{ with .Params.summary }}
+      <p class="hobby-page-lede">{{ . | markdownify }}</p>
+    {{ end }}
+    {{ with .Content }}
+      <div class="hobby-page-intro">{{ . }}</div>
+    {{ end }}
+  </header>
+
+  {{ $games := where .Site.RegularPages "Type" "games" }}
+  {{ $anime := where .Site.RegularPages "Type" "anime" }}
+  {{ $gamesSection := .Site.GetPage "/hobbies/games" }}
+  {{ $animeSection := .Site.GetPage "/hobbies/anime" }}
+
+  <div class="hobby-hub-grid">
+    {{ if $gamesSection }}
+      {{ partial "hobby-hub-tile.html" (dict
+        "title"      "Games"
+        "permalink"  $gamesSection.RelPermalink
+        "count"      (len $games)
+        "summary"    "FromSoft, CRPGs, anything with a good map."
+        "pages"      (first 3 (sort $games "Params.year_completed" "desc"))
+        "countLabel" "entries"
+      ) }}
+    {{ end }}
+
+    {{ if $animeSection }}
+      {{ partial "hobby-hub-tile.html" (dict
+        "title"      "Anime"
+        "permalink"  $animeSection.RelPermalink
+        "count"      (len $anime)
+        "summary"    "Long-running dramas, good fantasy, patient storytelling."
+        "pages"      (first 3 (sort $anime "Params.year_completed" "desc"))
+        "countLabel" "entries"
+      ) }}
+    {{ end }}
+  </div>
+</div>
+{{ end }}

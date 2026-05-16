@@ -1,0 +1,187 @@
+{{/*
+  XTX-style subtle interactive dot grid background.
+  - Full-viewport canvas sits behind the body content (z-index: -1)
+  - Idle state: faint grid of theme-colored dots, very slow breathing pulse
+  - Cursor proximity: nearby dots brighten + scale up, falloff with distance
+  - Performance: single rAF loop, only touches visible dots near cursor,
+    capped at ~60fps, pauses on hidden tabs
+  - Respects prefers-reduced-motion (renders a static grid, no cursor FX)
+  - Disabled on coarse pointers (touch) via matchMedia
+*/}}
+
+{{/* 1. Paint body's background onto <html> instead and clear body bg, */}}
+{{/* so the fixed canvas at z-index: -1 actually peeks through. */}}
+<style>
+  html {
+    background-color: var(--hb-color-background);
+  }
+  body.page-wrapper {
+    background-color: transparent;
+  }
+  #hb-bg-grid {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 500ms ease;
+  }
+  #hb-bg-grid.ready {
+    opacity: 1;
+  }
+</style>
+
+<script>
+(function () {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__hbDotGridInit) return;
+  window.__hbDotGridInit = true;
+
+  const prefersReduce =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarsePointer =
+    window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'hb-bg-grid';
+  canvas.setAttribute('aria-hidden', 'true');
+
+  const mount = () => {
+    if (!document.body) return;
+    document.body.insertBefore(canvas, document.body.firstChild);
+    requestAnimationFrame(() => canvas.classList.add('ready'));
+    start();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mount, { once: true });
+  } else {
+    mount();
+  }
+
+  function start() {
+    const ctx = canvas.getContext('2d', { alpha: true });
+    let width = 0,
+      height = 0,
+      dpr = 1;
+
+    const SPACING = 36;
+    const BASE_RADIUS = 0.9;
+    const MAX_RADIUS = 2.6;
+    const BASE_ALPHA = 0.1;
+    const MAX_ALPHA = 0.7;
+    const INFLUENCE = 170;
+    const INFLUENCE_SQ = INFLUENCE * INFLUENCE;
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const readPrimary = () => {
+      const rs = getComputedStyle(document.documentElement);
+      const v =
+        rs.getPropertyValue('--color-primary-500').trim() ||
+        rs.getPropertyValue('--hb-color-primary-500').trim();
+      return v || '#6366f1';
+    };
+    let primary = readPrimary();
+    const themeObserver = new MutationObserver(() => {
+      primary = readPrimary();
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'data-theme', 'style'],
+    });
+
+    const pointer = { x: -9999, y: -9999, active: false };
+
+    if (!coarsePointer) {
+      window.addEventListener(
+        'pointermove',
+        (e) => {
+          if (e.pointerType && e.pointerType !== 'mouse') return;
+          pointer.x = e.clientX;
+          pointer.y = e.clientY;
+          pointer.active = true;
+        },
+        { passive: true }
+      );
+      window.addEventListener('pointerleave', () => {
+        pointer.active = false;
+        pointer.x = -9999;
+        pointer.y = -9999;
+      });
+      document.addEventListener('mouseleave', () => {
+        pointer.active = false;
+        pointer.x = -9999;
+        pointer.y = -9999;
+      });
+    }
+
+    let running = true;
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running) requestAnimationFrame(frame);
+    });
+
+    function draw(time) {
+      ctx.clearRect(0, 0, width, height);
+
+      const cols = Math.ceil(width / SPACING) + 1;
+      const rows = Math.ceil(height / SPACING) + 1;
+      const breathe = prefersReduce ? 0 : 0.04 * Math.sin(time * 0.0006);
+
+      ctx.fillStyle = primary;
+
+      for (let j = 0; j < rows; j++) {
+        const y = j * SPACING;
+        for (let i = 0; i < cols; i++) {
+          const x = i * SPACING;
+
+          let alpha = BASE_ALPHA + breathe;
+          let radius = BASE_RADIUS;
+
+          if (pointer.active && !prefersReduce) {
+            const dx = x - pointer.x;
+            const dy = y - pointer.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < INFLUENCE_SQ) {
+              const t = 1 - Math.sqrt(d2) / INFLUENCE;
+              const falloff = t * t;
+              alpha = BASE_ALPHA + breathe + (MAX_ALPHA - BASE_ALPHA) * falloff;
+              radius = BASE_RADIUS + (MAX_RADIUS - BASE_RADIUS) * falloff;
+            }
+          }
+
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function frame(t) {
+      if (!running) return;
+      draw(t);
+      if (!prefersReduce) {
+        requestAnimationFrame(frame);
+      }
+    }
+
+    requestAnimationFrame(frame);
+  }
+})();
+</script>

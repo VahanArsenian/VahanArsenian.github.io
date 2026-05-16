@@ -1,0 +1,95 @@
+{{/*
+  hobby-filter-script.html
+  Small vanilla-JS helper that wires the filter bar to the card grid.
+  Scoped via data-hobby-grid so it is safe to include on multiple pages.
+*/}}
+<script>
+(function () {
+  var grids = document.querySelectorAll('[data-hobby-grid]');
+  grids.forEach(function (grid) {
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('[data-hobby-item]'));
+    var emptyState = grid.querySelector('[data-hobby-empty]');
+    var statusPills = grid.querySelectorAll('[data-filter-status]');
+    var genreSelect = grid.querySelector('[data-filter-genre]');
+    var ratingSelect = grid.querySelector('[data-filter-rating]');
+    var sortSelect = grid.querySelector('[data-sort]');
+    var container = grid.querySelector('[data-hobby-card-grid]');
+
+    var state = {
+      status: 'all',
+      genre: 'all',
+      minRating: 0,
+      sort: 'year-desc'
+    };
+
+    function apply() {
+      var visibleCount = 0;
+      cards.forEach(function (card) {
+        var status = card.getAttribute('data-status') || '';
+        var rating = parseFloat(card.getAttribute('data-rating') || '0');
+        var genres = (card.getAttribute('data-genres') || '').split('|').filter(Boolean);
+
+        var statusOk = state.status === 'all' || status === state.status;
+        var genreOk = state.genre === 'all' || genres.indexOf(state.genre) !== -1;
+        var ratingOk = rating >= state.minRating;
+
+        var visible = statusOk && genreOk && ratingOk;
+        card.hidden = !visible;
+        if (visible) visibleCount++;
+      });
+
+      if (emptyState) emptyState.hidden = visibleCount > 0;
+
+      var sorted = cards.slice().sort(function (a, b) {
+        switch (state.sort) {
+          case 'rating-asc':
+            return parseFloat(a.dataset.rating || 0) - parseFloat(b.dataset.rating || 0);
+          case 'year-desc':
+            return parseInt(b.dataset.year || 0) - parseInt(a.dataset.year || 0);
+          case 'year-asc':
+            return parseInt(a.dataset.year || 0) - parseInt(b.dataset.year || 0);
+          case 'title-asc':
+            return (a.dataset.title || '').localeCompare(b.dataset.title || '');
+          case 'rating-desc':
+          default:
+            return parseFloat(b.dataset.rating || 0) - parseFloat(a.dataset.rating || 0);
+        }
+      });
+
+      sorted.forEach(function (node) { container.appendChild(node); });
+    }
+
+    statusPills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        state.status = pill.getAttribute('data-filter-status');
+        statusPills.forEach(function (p) { p.classList.remove('is-active'); });
+        pill.classList.add('is-active');
+        apply();
+      });
+    });
+
+    if (genreSelect) {
+      genreSelect.addEventListener('change', function () {
+        state.genre = genreSelect.value;
+        apply();
+      });
+    }
+
+    if (ratingSelect) {
+      ratingSelect.addEventListener('change', function () {
+        state.minRating = parseFloat(ratingSelect.value);
+        apply();
+      });
+    }
+
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function () {
+        state.sort = sortSelect.value;
+        apply();
+      });
+    }
+
+    apply();
+  });
+})();
+</script>

@@ -1,0 +1,87 @@
+{{/*
+  Announcements block.
+
+  Reads entries from site.Data.announcements.entries (a list of dated
+  items), drops anything older than `cutoff_years` (default 2), sorts
+  newest-first, and renders them as a Markdown bullet list using the
+  same chrome as the standard markdown block.
+
+  Frontmatter:
+    block: announcements
+    content:
+      title: "Announcements"
+      icon:  "megaphone"
+      cutoff_years: 2          # optional, default 2
+      max:          0          # optional cap; 0 = no limit
+*/}}
+
+{{ $page := .wcPage }}
+{{ $block := .wcBlock }}
+{{ $content := $block.content }}
+{{ if not (reflect.IsMap $content) }}{{ $content = dict }}{{ end }}
+
+{{ $title := "" }}
+{{ with index $content "title" }}{{ $title = printf "%v" . | emojify | $page.RenderString }}{{ end }}
+
+{{ $icon := "" }}
+{{ with index $content "icon" }}
+  {{ if eq (printf "%T" .) "string" }}{{ $icon = strings.TrimSpace . }}{{ end }}
+{{ end }}
+
+{{ $cutoffYears := 2 }}
+{{ with index $content "cutoff_years" }}{{ $cutoffYears = int . }}{{ end }}
+
+{{ $max := 0 }}
+{{ with index $content "max" }}{{ $max = int . }}{{ end }}
+
+{{ $now := now }}
+{{ $cutoff := $now.AddDate (mul -1 $cutoffYears) 0 0 }}
+
+{{ $all := slice }}
+{{ with hugo.Data.announcements }}
+  {{ with .entries }}{{ $all = . }}{{ end }}
+{{ end }}
+
+{{/* Filter by date and sort newest-first */}}
+{{ $kept := slice }}
+{{ range $all }}
+  {{ $d := time .date }}
+  {{ if $d.After $cutoff }}
+    {{ $kept = $kept | append (dict "date" $d "text" .text) }}
+  {{ end }}
+{{ end }}
+{{ $kept = sort $kept "date" "desc" }}
+{{ if and (gt $max 0) (gt (len $kept) $max) }}
+  {{ $kept = first $max $kept }}
+{{ end }}
+
+<div class="py-8 md:py-12 px-4">
+  <div class="max-w-6xl mx-auto">
+    {{ if $title }}
+    <div class="flex items-center gap-4 mb-6">
+      {{ if $icon }}
+        <div class="flex-shrink-0 w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center">
+          {{ partial "functions/get_icon" (dict "name" $icon "attributes" "class='w-6 h-6 text-primary-600 dark:text-primary-400'") }}
+        </div>
+      {{ end }}
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+        {{ $title }}
+      </h2>
+    </div>
+    {{ end }}
+
+    {{ if $kept }}
+      <div class="prose prose-slate lg:prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200">
+        <ul>
+          {{ range $kept }}
+            {{ $label := .date.Format "Jan 2006" }}
+            {{ $body := .text | $page.RenderString | safeHTML }}
+            <li><strong>{{ $label }}</strong> — {{ $body }}</li>
+          {{ end }}
+        </ul>
+      </div>
+    {{ else }}
+      <p class="text-gray-500 dark:text-gray-400 italic">No recent announcements.</p>
+    {{ end }}
+  </div>
+</div>

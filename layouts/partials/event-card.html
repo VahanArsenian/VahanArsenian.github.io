@@ -1,0 +1,87 @@
+{{/*
+  event-card.html — single row in the Events list.
+  Inputs:
+    - page:     the talk Page object
+    - upcoming: bool, whether to show an "Upcoming" badge
+
+  The card surfaces the corresponding paper(s) when present:
+    1. If the talk's frontmatter sets `paper`, that slug is looked up
+       under /publication/ (e.g. paper: "iclr-2026").
+    2. If `paper` is a list, every entry is resolved.
+    3. Otherwise we try a publication with the same slug as the talk.
+    4. If nothing matches we fall back to the talk's `summary`.
+*/}}
+{{ $p := .page }}
+{{ $upcoming := .upcoming }}
+{{ $month := $p.Date.Format "Jan" }}
+{{ $day := $p.Date.Format "2" }}
+{{ $year := $p.Date.Format "2006" }}
+
+{{/* Resolve linked publications */}}
+{{ $papers := slice }}
+{{ $explicit := $p.Params.paper }}
+{{ if $explicit }}
+  {{ $slugs := slice }}
+  {{ if reflect.IsSlice $explicit }}
+    {{ $slugs = $explicit }}
+  {{ else }}
+    {{ $slugs = slice $explicit }}
+  {{ end }}
+  {{ range $slugs }}
+    {{ with site.GetPage (printf "/publication/%s" .) }}
+      {{ $papers = $papers | append . }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{/* Fall back to slug match */}}
+  {{ with site.GetPage (printf "/publication/%s" $p.File.ContentBaseName) }}
+    {{ $papers = $papers | append . }}
+  {{ end }}
+{{ end }}
+
+<li>
+  <a class="event-card" href="{{ $p.RelPermalink }}">
+    <div class="event-date" aria-label="{{ $p.Date.Format "January 2, 2006" }}">
+      <span>{{ $month }}</span>
+      <span class="event-date-day">{{ $day }}</span>
+      <span class="event-date-year">{{ $year }}</span>
+    </div>
+    <div class="event-body">
+      <h3 class="event-title">
+        {{ $p.Title }}
+        {{ if $upcoming }}<span class="event-upcoming-flag">Upcoming</span>{{ end }}
+      </h3>
+
+      {{ with $p.Params.event }}
+        <div class="event-venue">{{ . }}</div>
+      {{ end }}
+
+      {{ $loc := $p.Params.location }}
+      {{ if and $loc (ne (lower $loc) "tba") }}
+        <div class="event-location" aria-label="Location: {{ $loc }}">
+          <svg class="event-location-icon" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+          </svg>
+          <span>{{ $loc }}</span>
+        </div>
+      {{ end }}
+
+      {{ if $papers }}
+        <div class="event-papers">
+          <span class="event-papers-label">Presented:</span>
+          <ul class="event-papers-list">
+            {{ range $papers }}
+              <li>
+                <span class="event-paper-title">{{ .Title }}</span>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ else }}
+        {{ with $p.Params.summary }}
+          <p class="event-summary">{{ . | markdownify }}</p>
+        {{ end }}
+      {{ end }}
+    </div>
+  </a>
+</li>

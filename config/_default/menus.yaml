@@ -1,0 +1,16 @@
+main:
+  - name: Home
+    url: "#about"
+    weight: 10
+  - name: Publications
+    url: "/publication/"
+    weight: 20
+  - name: Events
+    url: "/talk/"
+    weight: 30
+  - name: Teaching
+    url: "/teaching/"
+    weight: 40
+  - name: Hobbies
+    url: "/hobbies/"
+    weight: 60

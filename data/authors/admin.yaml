@@ -1,0 +1,52 @@
+schema: hugoblox/author/v1
+slug: admin
+is_owner: true
+
+name:
+  display: Vahan Arsenyan
+  given: Vahan
+  family: Arsenyan
+
+role: PhD Candidate
+
+bio: |
+  PhD candidate at CREST, ENSAE, Institut Polytechnique de Paris, under the
+  supervision of Prof. Arnak Dalalyan. Interested in generation, sampling, and
+  online learning. In my free time, I play games and watch anime.
+
+affiliations:
+  - name: CREST, ENSAE, Institut Polytechnique de Paris
+    url: https://crest.science/
+
+interests:
+  - Online Learning
+  - Generation
+  - Sampling
+
+education:
+  - degree: PhD in Statistics
+    institution: ENSAE, Institut Polytechnique de Paris
+    year: 2024 – present
+    icon: academic-cap
+  - degree: MSc in Data Science
+    institution: Yerevan State University
+    year: 2020 – 2022
+    icon: academic-cap
+  - degree: BSc in Computer Science
+    institution: National Polytechnic University of Armenia
+    year: 2015 – 2019
+    icon: academic-cap
+
+links:
+  - icon: at-symbol
+    url: mailto:vahan.arsenyan@ensae.fr
+    label: Email
+  - icon: academicons/google-scholar
+    url: https://scholar.google.com/citations?user=C5SdQnkAAAAJ
+    label: Google Scholar
+  - icon: brands/linkedin
+    url: https://www.linkedin.com/in/vahanarsenyan/
+    label: LinkedIn
+  - icon: brands/github
+    url: https://github.com/VahanArsenian
+    label: GitHub

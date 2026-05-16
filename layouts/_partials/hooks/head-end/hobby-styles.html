@@ -1,0 +1,6 @@
+{{/*
+  Inject the hobbies/site design tokens via the new theme's head-end hook.
+  The legacy partials/custom_head.html is no longer called by Hugo Blox
+  kit/modules/blox@v0.12.0, so we wire the styles in here instead.
+*/}}
+{{ partial "hobby-styles.html" . }}

@@ -1,0 +1,79 @@
+{{/*
+  hobby-card.html
+  A single card in the hobby grid. Shared by games and anime.
+
+  Expected dict keys:
+    page   - the Page to render
+    medium - "games" or "anime"
+*/}}
+{{ $p := .page }}
+{{ $medium := .medium }}
+{{ $rating := $p.Params.rating | default 0 }}
+{{ $status := $p.Params.status | default "" }}
+{{ $year := $p.Params.year_completed | default 0 }}
+{{ $genres := $p.Params.genre | default slice }}
+
+{{ $cover := $p.Params.cover }}
+{{ $img := "" }}
+{{ with $cover }}
+  {{ $img = (resources.Get (printf "media/%s" .)) }}
+  {{ if not $img }}
+    {{ $img = ($p.Resources.GetMatch (printf "%s*" (path.Base .))) }}
+  {{ end }}
+{{ end }}
+
+<article
+  class="hobby-card"
+  data-hobby-item
+  data-status="{{ $status }}"
+  data-rating="{{ $rating }}"
+  data-year="{{ $year }}"
+  data-title="{{ $p.Title }}"
+  data-genres="{{ delimit $genres "|" }}"
+>
+  <a href="{{ $p.RelPermalink }}" class="hobby-card__link">
+    <div class="hobby-card__cover">
+      {{ if $img }}
+        <img src="{{ $img.RelPermalink }}" alt="{{ $p.Title }} cover" loading="lazy">
+      {{ else }}
+        <div class="hobby-card__cover-placeholder" aria-hidden="true">
+          <span>{{ substr $p.Title 0 1 }}</span>
+        </div>
+      {{ end }}
+      {{ if gt $rating 0.0 }}
+        <span class="hobby-card__rating" aria-label="Rating {{ $rating }} out of 10">{{ $rating }}</span>
+      {{ end }}
+      {{ if $status }}
+        <span class="hobby-card__status hobby-card__status--{{ $status }}">{{ $status | humanize | title }}</span>
+      {{ end }}
+    </div>
+    <div class="hobby-card__body">
+      <h3 class="hobby-card__title">{{ $p.Title }}</h3>
+      {{ $hasMeta := false }}
+      {{ if eq $medium "games" }}
+        {{ if $p.Params.platform }}{{ $hasMeta = true }}{{ end }}
+      {{ else }}
+        {{ if $p.Params.studio }}{{ $hasMeta = true }}{{ end }}
+      {{ end }}
+      {{ if $hasMeta }}
+        <p class="hobby-card__meta">
+          {{ if eq $medium "games" }}
+            {{ with $p.Params.platform }}<span>{{ delimit . " · " }}</span>{{ end }}
+          {{ else }}
+            {{ with $p.Params.studio }}<span>{{ . }}</span>{{ end }}
+          {{ end }}
+        </p>
+      {{ end }}
+      {{ with $p.Params.summary }}
+        <p class="hobby-card__summary">{{ . }}</p>
+      {{ end }}
+      {{ if $genres }}
+        <ul class="hobby-card__tags">
+          {{ range first 3 $genres }}
+            <li>{{ . }}</li>
+          {{ end }}
+        </ul>
+      {{ end }}
+    </div>
+  </a>
+</article>

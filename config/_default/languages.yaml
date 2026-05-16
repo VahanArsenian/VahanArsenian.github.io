@@ -1,0 +1,11 @@
+en:
+  languageCode: en-us
+  contentDir: content
+  title: Vahan Arsenyan
+  languageName: English
+  weight: 1
+  params:
+    description: >-
+      PhD candidate at CREST, ENSAE, Institut Polytechnique de Paris, under the
+      supervision of Prof. Arnak Dalalyan. Interested in generation, sampling,
+      and online learning.

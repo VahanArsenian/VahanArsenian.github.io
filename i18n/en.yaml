@@ -1,0 +1,11 @@
+# Project-level i18n overrides. Hugo merges these on top of the
+# Hugo Blox theme's `i18n/en.yaml`, so only the keys we want to
+# customise need to live here.
+
+# The arXiv link button on publication pages and citation lists
+# defaults to "Preprint", which can imply the paper has not been
+# peer-reviewed. Most of our entries are accepted/published, so
+# label the link "Recent Version" to indicate it points to the
+# latest publicly available version on arXiv.
+- id: btn_preprint
+  translation: Recent Version

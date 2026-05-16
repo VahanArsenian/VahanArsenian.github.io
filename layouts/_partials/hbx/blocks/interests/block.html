@@ -1,0 +1,65 @@
+{{/* Local Hugo Blox: Research Interests (standalone).
+     Renders the `interests` field from the author profile as chips. */}}
+
+{{ $page := .wcPage }}
+{{ $block := .wcBlock }}
+
+{{ $content := $block.content }}
+{{ if not (reflect.IsMap $content) }}{{ $content = dict }}{{ end }}
+
+{{ $author := "me" }}
+{{ $author_raw := index $content "username" }}
+{{ if eq (printf "%T" $author_raw) "string" }}
+  {{ $author = strings.TrimSpace $author_raw }}
+{{ end }}
+{{ $profile := partial "functions/get_author_profile" $author }}
+
+{{ $interests_raw := $profile.interests }}
+{{ $interests := slice }}
+{{ if reflect.IsSlice $interests_raw }}
+  {{ $interests = $interests_raw }}
+{{ else if eq (printf "%T" $interests_raw) "string" }}
+  {{ $interests = slice $interests_raw }}
+{{ end }}
+
+{{ $title := "Research Interests" }}
+{{ $title_raw := index $content "title" }}
+{{ if eq (printf "%T" $title_raw) "string" }}
+  {{ $t := strings.TrimSpace $title_raw }}
+  {{ if ne $t "" }}{{ $title = $t }}{{ end }}
+{{ end }}
+
+{{ $subtitle := "" }}
+{{ $subtitle_raw := index $content "subtitle" }}
+{{ if eq (printf "%T" $subtitle_raw) "string" }}
+  {{ $subtitle = strings.TrimSpace $subtitle_raw }}
+{{ end }}
+
+{{ if gt (len $interests) 0 }}
+<div class="py-8 md:py-12 px-4">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-center gap-4 mb-6">
+      <div class="flex-shrink-0 w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center">
+        {{ partial "functions/get_icon" (dict "name" "sparkles" "attributes" "class='w-6 h-6 text-primary-600 dark:text-primary-400'") }}
+      </div>
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">{{ $title | markdownify }}</h2>
+    </div>
+    {{ with $subtitle }}
+      <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">{{ . | markdownify }}</p>
+    {{ end }}
+    <div class="flex flex-wrap gap-3">
+      {{ range $interests }}
+        {{ $interest := strings.TrimSpace (printf "%v" .) }}
+        {{ if $interest }}
+        <span class="inline-block bg-primary-50 dark:bg-gray-800 text-primary-800 dark:text-primary-200 text-base font-medium px-4 py-2 rounded-full border border-primary-200/50 dark:border-primary-800/50
+                     hover:bg-primary-100
+                     dark:hover:bg-primary-500 dark:hover:text-gray-900 dark:hover:border-primary-500
+                     transition-all duration-200 cursor-default">
+          {{ $interest | markdownify | emojify }}
+        </span>
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+</div>
+{{ end }}

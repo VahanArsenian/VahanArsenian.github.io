@@ -1,0 +1,63 @@
+{{/*
+  Homepage section rhythm.
+
+  Three layers contribute to the vertical gap between two adjacent
+  homepage sections:
+    1. `.hbb-section`           → outer wrapper added by Hugo Blox
+    2. `.hbb-section > .py-8`   → each block's own `py-8 md:py-12`
+    3. `.flex.items-center.gap-4.mb-6` → title row's `mb-6` before body
+
+  Stacked at md+, the upstream defaults add up to ~12rem of dead space
+  between sections and ~1.5rem between a title and its content. We
+  collapse all three here so block authors don't have to.
+
+  The bio block (`.blox-resume-biography-3`) keeps its own larger
+  padding because it acts as the hero at the very top of the page.
+*/}}
+<style>
+  /* Outer section wrapper: leave the padding to the inner block. */
+  .hbb-section {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Inner block wrapper — overrides the Tailwind `py-8 md:py-12`
+     applied by collection / announcements / markdown / interests /
+     education blocks. Uses the descendant combinator so specificity
+     beats single-class utilities (0,2,0 > 0,1,0). */
+  .hbb-section > .py-8 {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .hbb-section > .py-8 {
+      padding-top: 1.75rem;
+      padding-bottom: 1.75rem;
+    }
+  }
+
+  /* Tighten the gap between a section's title row and its body. */
+  .hbb-section .mb-6 {
+    margin-bottom: 0.875rem;
+  }
+
+  /* The upstream citation view start (`citation--start.html`) wraps the
+     publication list in `mt-16 sm:mt-20`, which stacks an extra 4–5rem
+     under the section heading. Drop it inside homepage sections so the
+     list sits close to its title. */
+  .hbb-section .collection-list .mt-16 {
+    margin-top: 0;
+  }
+
+  /* Hero / bio section keeps its own breathing room. */
+  .hbb-section.blox-resume-biography-3 > .resume-biography {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .hbb-section.blox-resume-biography-3 > .resume-biography {
+      padding-top: 2.5rem;
+      padding-bottom: 2.5rem;
+    }
+  }
+</style>

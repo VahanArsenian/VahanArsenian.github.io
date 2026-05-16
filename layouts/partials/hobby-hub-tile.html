@@ -1,0 +1,41 @@
+{{/*
+  hobby-hub-tile.html
+  Big tile for the /hobbies/ hub page.
+
+  Expected dict keys:
+    title      - tile title (e.g. "Games")
+    permalink  - URL the tile links to
+    count      - number of entries
+    summary    - one-line description
+    pages      - slice of pages used to render a mini cover-collage preview
+    countLabel - label next to count (e.g. "entries")
+*/}}
+<a href="{{ .permalink }}" class="hobby-hub-tile">
+  <div class="hobby-hub-tile__preview">
+    {{ range $i, $p := .pages }}
+      {{ $cover := $p.Params.cover }}
+      {{ $img := "" }}
+      {{ with $cover }}
+        {{ $img = (resources.Get (printf "media/%s" .)) }}
+        {{ if not $img }}
+          {{ $img = ($p.Resources.GetMatch (printf "%s*" (path.Base .))) }}
+        {{ end }}
+      {{ end }}
+      <div class="hobby-hub-tile__chip" style="--chip-index: {{ $i }};">
+        {{ if $img }}
+          <img src="{{ $img.RelPermalink }}" alt="{{ $p.Title }}">
+        {{ else }}
+          <span class="hobby-hub-tile__chip-fallback">{{ substr $p.Title 0 1 }}</span>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+  <div class="hobby-hub-tile__body">
+    <div class="hobby-hub-tile__headline">
+      <h2 class="hobby-hub-tile__title">{{ .title }}</h2>
+      <span class="hobby-hub-tile__count">{{ .count }} {{ .countLabel }}</span>
+    </div>
+    <p class="hobby-hub-tile__summary">{{ .summary }}</p>
+    <span class="hobby-hub-tile__cta">Browse <span aria-hidden="true">&rarr;</span></span>
+  </div>
+</a>

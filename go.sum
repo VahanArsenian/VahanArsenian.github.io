@@ -1,0 +1,10 @@
+github.com/HugoBlox/kit/modules/analytics v0.3.2 h1:kg/th7kAgETFgCJCiFZfLjAC/KAVeFxlExVlOjNg0jE=
+github.com/HugoBlox/kit/modules/analytics v0.3.2/go.mod h1:lEEX95UxzXCMulsg51SIkOtlrj3nKU99fAOV+rQ91bw=
+github.com/HugoBlox/kit/modules/blox v0.12.0 h1:IFw9heH1MBgs2kCdproVZeUu2z2x+cjy9vCAegyldjc=
+github.com/HugoBlox/kit/modules/blox v0.12.0/go.mod h1:0F2Ss2NeylmaBP7+qx0U6zFPeMZ9NoLbAQakKXDqygo=
+github.com/HugoBlox/kit/modules/integrations/netlify v1.3.0 h1:OP7H3ZaN9cXQrGEzOXt2uD1IRD1MNFGbI5qIM75gth8=
+github.com/HugoBlox/kit/modules/integrations/netlify v1.3.0/go.mod h1:UuppRGml2K1EmlDkN+HemycohgZLjOy0QPGYOnoPnY4=
+github.com/HugoBlox/kit/modules/slides v1.3.0 h1:jMvtb0dtbXpN7PFol/sLt99ITJlVu8fFls5ZSnrIl7M=
+github.com/HugoBlox/kit/modules/slides v1.3.0/go.mod h1:/XTQAtd2KCiwg/GVMAoSzKPf/DYPVbAAEysmBdWgYu4=
+github.com/HugoBlox/kit/templates/academic-cv v0.0.0-20260419060221-032e2ce5c5fb h1:vs2bvKqvydH37nikewM3liXZ0rS71XQAGPZ1DxajyRQ=
+github.com/HugoBlox/kit/templates/academic-cv v0.0.0-20260419060221-032e2ce5c5fb/go.mod h1:vMA9Z2Dwsk574ohLMq4uya7zw7peYpZum7FV5VIKvso=

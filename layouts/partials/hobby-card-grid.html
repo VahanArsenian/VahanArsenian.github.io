@@ -1,0 +1,78 @@
+{{/*
+  hobby-card-grid.html
+  Shared grid + filter bar used by games and anime list pages.
+
+  Expected dict keys:
+    pages       - slice of pages to render
+    medium      - "games" or "anime" (drives meta-line fields)
+    statusAll   - slice of allowed statuses for the filter pills
+*/}}
+{{ $pages := .pages }}
+{{ $medium := .medium }}
+{{ $statusAll := .statusAll }}
+
+{{/* Collect unique genres across pages */}}
+{{ $genres := slice }}
+{{ range $pages }}
+  {{ range .Params.genre }}
+    {{ $genres = $genres | append . }}
+  {{ end }}
+{{ end }}
+{{ $genres = uniq $genres | sort }}
+
+<div class="hobby-grid-wrapper" data-hobby-grid>
+  <div class="hobby-filter-bar">
+    <div class="hobby-filter-group" role="group" aria-label="Status filter">
+      <button type="button" class="hobby-filter-pill is-active" data-filter-status="all">All</button>
+      {{ range $statusAll }}
+        <button type="button" class="hobby-filter-pill" data-filter-status="{{ . }}">{{ . | humanize | title }}</button>
+      {{ end }}
+    </div>
+
+    <div class="hobby-filter-controls">
+      {{ if $genres }}
+        <label class="hobby-filter-select">
+          <span class="hobby-filter-select__label">Genre</span>
+          <select data-filter-genre>
+            <option value="all">All genres</option>
+            {{ range $genres }}
+              <option value="{{ . }}">{{ . }}</option>
+            {{ end }}
+          </select>
+        </label>
+      {{ end }}
+
+      <label class="hobby-filter-select">
+        <span class="hobby-filter-select__label">Min rating</span>
+        <select data-filter-rating>
+          <option value="0">Any</option>
+          <option value="7">7+</option>
+          <option value="8">8+</option>
+          <option value="9">9+</option>
+          <option value="9.5">9.5+</option>
+        </select>
+      </label>
+
+      <label class="hobby-filter-select">
+        <span class="hobby-filter-select__label">Sort</span>
+        <select data-sort>
+          <option value="year-desc" selected>Year (new → old)</option>
+          <option value="year-asc">Year (old → new)</option>
+          <option value="rating-desc">Rating (high → low)</option>
+          <option value="rating-asc">Rating (low → high)</option>
+          <option value="title-asc">Title (A → Z)</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="hobby-card-grid" data-hobby-card-grid>
+    {{ range $pages }}
+      {{ partial "hobby-card.html" (dict "page" . "medium" $medium) }}
+    {{ end }}
+  </div>
+
+  <p class="hobby-empty-state" data-hobby-empty hidden>No entries match these filters.</p>
+</div>
+
+{{ partial "hobby-filter-script.html" . }}

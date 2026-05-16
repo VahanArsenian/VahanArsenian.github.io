@@ -1,0 +1,24 @@
+# Hugo build output
+/public/
+/resources/_gen/
+/assets/jsconfig.json
+hugo_stats.json
+
+# Hugo generated files
+.hugo_build.lock
+
+# Node / npm (Hugo Blox may install npm deps for tailwind etc.)
+node_modules/
+package-lock.json
+
+# OS / editor / tool-local config
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.claude/
+*.swp
+
+# Local env
+.env
+.env.*
