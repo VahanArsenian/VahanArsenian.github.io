@@ -7,9 +7,10 @@ hugo_stats.json
 # Hugo generated files
 .hugo_build.lock
 
-# Node / npm (Hugo Blox may install npm deps for tailwind etc.)
+# Node / npm (Hugo Blox installs npm deps for tailwind etc.)
+# NOTE: package-lock.json is committed so CI can run `npm ci` and provide
+# the Tailwind CLI binary that Hugo's css.tailwindcss function requires.
 node_modules/
-package-lock.json
 
 # OS / editor / tool-local config
 .DS_Store
