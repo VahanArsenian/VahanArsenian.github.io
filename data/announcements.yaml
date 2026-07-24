@@ -4,8 +4,10 @@
 #
 # Date format: YYYY-MM-DD (the day can be a best guess for month-only events).
 entries:
-  - date: 2026-05-16
-    text: "Attending [**SLT 2026 — Statistics and Learning Theory Summer School**](https://armxss.com/slt2026/#intro) in Armenia this July (12–19), co-hosted by YSU's Faculty of Mathematics & Mechanics and ENSAE Paris."
+  - date: 2026-07-24
+    text: "Released [**banditry**](https://github.com/VahanArsenian/banditry) — a Python library for contextual bandit agents (GP‑UCB, Thompson sampling) over mixed black‑box design spaces."
+  - date: 2026-06-16
+    text: "Attended [**SLT 2026 — Statistics and Learning Theory Summer School**](https://armxss.com/slt2026/#intro)."
   - date: 2026-04-15
     text: "[*Contextual Causal Bayesian Optimisation*](/publication/iclr-2026/) accepted at **ICLR 2026**."
   - date: 2025-10-15
