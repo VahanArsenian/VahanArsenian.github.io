@@ -2,8 +2,8 @@ main:
   - name: Home
     url: "#about"
     weight: 10
-  - name: Publications
-    url: "/publication/"
+  - name: Contributions
+    url: "/contributions/"
     weight: 20
   - name: Events
     url: "/talk/"
