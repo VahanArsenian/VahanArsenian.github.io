@@ -7,10 +7,10 @@ status: playing
 platform: ["PC"]
 genre: ["Deckbuilder", "Roguelike", "Strategy"]
 hours: 0
-year_completed: 0
+year_completed: 2026
 summary: "The sequel to the deckbuilder that defined the genre — currently mid-climb."
 ---
 
 Mega Crit gave the formula another pass: new characters, new cards,
-and co-op for up to four. Early Access, but the runs already feel
-distinct from the first game.
+and co-op for up to four. In Early Access since March 2026, but the
+runs already feel distinct from the first game.
