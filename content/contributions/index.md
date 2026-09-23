@@ -32,4 +32,13 @@ sections:
           - software
     design:
       view: citation
+
+  - block: markdown
+    id: services
+    content:
+      title: "Services"
+      icon: "clipboard-document-check"
+      text: |-
+        - Reviewer for ICLR 2027
+        - Reviewer for NeurIPS 2026
 ---
