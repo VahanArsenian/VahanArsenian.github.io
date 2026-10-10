@@ -5,7 +5,7 @@
 # Date format: YYYY-MM-DD (the day can be a best guess for month-only events).
 entries:
   - date: 2026-10-10
-    text: "Recognised as Top Reviewer for NeurIPS 2026."
+    text: "Recognised as **Top Reviewer for NeurIPS 2026**."
   - date: 2026-07-24
     text: "Released [**banditry**](https://github.com/VahanArsenian/banditry) — a Python library for contextual bandit agents (GP‑UCB, Thompson sampling) over mixed black‑box design spaces."
   - date: 2026-06-16
