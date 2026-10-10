@@ -40,5 +40,5 @@ sections:
       icon: "clipboard-document-check"
       text: |-
         - Reviewer for ICLR 2027
-        - Reviewer for NeurIPS 2026
+        - Top Reviewer for NeurIPS 2026
 ---
